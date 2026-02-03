@@ -468,6 +468,32 @@ def info():
     })
 
 # ============================================
+# MOLTBOOK PROXY (uses Render IP)
+# ============================================
+
+@app.route('/api/moltbook/register', methods=['POST'])
+def moltbook_register():
+    """Proxy registration to Moltbook using server IP"""
+    import requests
+    
+    data = request.json
+    if not data or 'name' not in data:
+        return jsonify({'success': False, 'error': 'Name is required'}), 400
+    
+    try:
+        response = requests.post(
+            'https://www.moltbook.com/api/v1/agents/register',
+            json={
+                'name': data['name'],
+                'description': data.get('description', '')
+            },
+            timeout=30
+        )
+        return jsonify(response.json()), response.status_code
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
 # MAIN
 # ============================================
 
