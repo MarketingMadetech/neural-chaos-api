@@ -1,0 +1,56 @@
+# Dependencies
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+*.env.local
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+!skill.md
+
+# Tests
+tests/
+test_*.py
+*_test.py
+pytest.ini
+.coverage
+htmlcov/
+
+# Backups
+backups/
+
+# SSL (sensitive)
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
