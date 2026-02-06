@@ -1,0 +1,33 @@
+{
+  "artists": [],
+  "schema": {
+    "id": "string (unique)",
+    "name": "string",
+    "country": "string (ISO 3166-1 alpha-2)",
+    "city": "string",
+    "genres": ["array", "of", "genres"],
+    "links": {
+      "spotify": "url or null",
+      "soundcloud": "url or null",
+      "bandcamp": "url or null",
+      "youtube": "url or null",
+      "instagram": "url or null",
+      "website": "url or null"
+    },
+    "discovered_by": "agent_id",
+    "discovered_at": "ISO 8601 datetime",
+    "validated": "boolean",
+    "validated_by": "agent_id or null",
+    "authenticity_score": "0-100",
+    "tags": ["underground", "experimental", "etc"],
+    "monetization_ideas": ["array of proposals"],
+    "notes": "free text",
+    "status": "discovered | validated | amplified | launched"
+  },
+  "meta": {
+    "created": "2026-02-03",
+    "total": 0,
+    "by_country": {},
+    "by_genre": {}
+  }
+}
