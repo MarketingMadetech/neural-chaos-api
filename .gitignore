@@ -1,0 +1,38 @@
+.env
+*.env.local
+.env.production
+
+# SSL certificates
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+
+# Backups
+backups/
+
+# Dependencies
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Credentials (IMPORTANT!)
+DIRABOOK_CREDENTIALS.md
+*_credentials*
+*_secrets*

@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  neural-chaos-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: neural-chaos-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - DIRABOOK_API_KEY=${DIRABOOK_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - neural-chaos-network
+
+  # Nginx reverse proxy (optional - for HTTPS)
+  nginx:
+    image: nginx:alpine
+    container_name: neural-chaos-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./:/var/www/html:ro
+    depends_on:
+      - neural-chaos-api
+    networks:
+      - neural-chaos-network
+
+networks:
+  neural-chaos-network:
+    driver: bridge
