@@ -28,5 +28,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5000/api/health || exit 1
 
 # Run with gunicorn (production WSGI server)
-# Run gunicorn from api/ where server.py is located
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "--chdir", "api", "server:app"]
+# Files are already in /app after COPY, no need to chdir
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "server:app"]
