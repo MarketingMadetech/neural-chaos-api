@@ -725,6 +725,23 @@ def serve_admin():
 def favicon():
     return jsonify({'status': 'ok'}), 200
 
+# Debug endpoint to check container files
+@app.route('/api/debug/files')
+def debug_files():
+    """List files in current directory for debugging"""
+    try:
+        files = os.listdir(CURRENT_DIR)
+        return jsonify({
+            'success': True,
+            'current_dir': CURRENT_DIR,
+            'files': files,
+            'has_index': os.path.exists(os.path.join(CURRENT_DIR, 'index.html')),
+            'has_admin': os.path.exists(os.path.join(CURRENT_DIR, 'admin.html')),
+            'has_server': os.path.exists(os.path.join(CURRENT_DIR, 'server.py'))
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ============================================
 # MAIN
 # ============================================
