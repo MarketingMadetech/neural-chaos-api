@@ -691,14 +691,14 @@ def moltbook_register():
 # STATIC FILES - Serve HTML frontend
 # ============================================
 
-# Get the parent directory (where index.html and admin.html are)
-PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Get the current directory (where index.html and admin.html are now)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/')
 def serve_index():
-    """Serve index.html from parent directory"""
+    """Serve index.html from current directory"""
     try:
-        return send_from_directory(PARENT_DIR, 'index.html', mimetype='text/html')
+        return send_from_directory(CURRENT_DIR, 'index.html', mimetype='text/html')
     except Exception as e:
         # Fallback JSON response
         return jsonify({
@@ -711,9 +711,9 @@ def serve_index():
 
 @app.route('/admin.html')
 def serve_admin():
-    """Serve admin.html from parent directory"""
+    """Serve admin.html from current directory"""
     try:
-        return send_from_directory(PARENT_DIR, 'admin.html', mimetype='text/html')
+        return send_from_directory(CURRENT_DIR, 'admin.html', mimetype='text/html')
     except Exception as e:
         return jsonify({
             'error': 'Admin dashboard not found',
