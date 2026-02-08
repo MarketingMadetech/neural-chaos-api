@@ -865,12 +865,13 @@
         const data = await res.json();
         
         if (data.success) {
-          status.innerHTML = `✅ Synced ${data.data.synced} posts`;
-          showAlert(`✅ Moltbook sync complete! ${data.data.synced} posts synced.`);
+          const synced = data.data.synced;
+          status.innerHTML = synced > 0 ? `✅ Synced ${synced} posts` : '✅ No new posts to sync';
+          showAlert(synced > 0 ? `✅ Moltbook sync complete! ${synced} posts synced.` : '✅ Sync complete - already up to date');
           document.getElementById('moltbook-count').textContent = data.data.total_posts;
           refreshPosts();
         } else {
-          status.innerHTML = '❌ Sync failed';
+          status.innerHTML = `❌ Sync failed: ${data.error || 'Unknown error'}`;
         }
       } catch (err) {
         status.innerHTML = `❌ Error: ${err.message}`;
@@ -929,7 +930,7 @@
         const data = await res.json();
         
         if (data.success) {
-          status.innerHTML = `✅ API Healthy • v${data.data.version}`;
+          status.innerHTML = `✅ API Healthy • v${data.version} • ${data.status}`;
         } else {
           status.innerHTML = '⚠️ API responding but with errors';
         }
