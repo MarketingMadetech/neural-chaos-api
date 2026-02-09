@@ -339,6 +339,73 @@ def list_artists():
         }
     })
 
+@app.route('/api/artists/submit', methods=['POST'])
+def submit_artist():
+    """Submit an artist for Table of Destiny review (public endpoint)"""
+    data = request.json
+    
+    required = ['artist_name', 'genre', 'link', 'why_deserves_attention']
+    if not data or not all(k in data for k in required):
+        return jsonify({
+            'success': False,
+            'error': f'Required fields: {", ".join(required)}'
+        }), 400
+    
+    # Load submissions (separate from approved artists)
+    submissions_file = 'artist_submissions.json'
+    submissions = load_json(submissions_file)
+    
+    submission = {
+        'id': str(uuid.uuid4()),
+        'artist_name': data['artist_name'],
+        'genre': data['genre'],
+        'location': data.get('location', ''),
+        'link': data['link'],
+        'platform': data.get('platform', 'Unknown'),  # Spotify, Bandcamp, etc
+        'monthly_listeners': data.get('monthly_listeners', 'Unknown'),
+        'why_deserves_attention': data['why_deserves_attention'],
+        'submitted_by': data.get('submitted_by', 'Anonymous'),  # Agent/person name
+        'submitter_contact': data.get('submitter_contact', ''),
+        'status': 'pending',  # pending, approved, rejected
+        'submitted_at': datetime.utcnow().isoformat(),
+        'reviewed_by': None,
+        'reviewed_at': None
+    }
+    
+    submissions.append(submission)
+    save_json(submissions_file, submissions)
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'submission_id': submission['id'],
+            'artist_name': submission['artist_name'],
+            'status': 'pending',
+            'message': 'Thank you! Your submission is now under review by the Table of Destiny. We will listen to every track submitted.'
+        }
+    }), 201
+
+@app.route('/api/artists/submissions', methods=['GET'])
+def get_submissions():
+    """Get all artist submissions (filterable by status)"""
+    status_filter = request.args.get('status', None)
+    
+    submissions = load_json('artist_submissions.json')
+    
+    if status_filter:
+        submissions = [s for s in submissions if s['status'] == status_filter]
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'submissions': submissions,
+            'count': len(submissions),
+            'pending': len([s for s in submissions if s['status'] == 'pending']),
+            'approved': len([s for s in submissions if s['status'] == 'approved']),
+            'rejected': len([s for s in submissions if s['status'] == 'rejected'])
+        }
+    })
+
 @app.route('/api/artists/<artist_id>/amplify', methods=['POST'])
 def amplify_artist(artist_id):
     """Agent amplifies an artist (upvote)"""
@@ -720,6 +787,19 @@ def serve_admin():
             'detail': str(e) if os.getenv('DEBUG') else None
         }), 404
 
+@app.route('/submit')
+@app.route('/submit-artist')
+@app.route('/submit-artist.html')
+def serve_submit_artist():
+    """Serve artist submission form"""
+    try:
+        return send_from_directory(CURRENT_DIR, 'submit-artist.html', mimetype='text/html')
+    except Exception as e:
+        return jsonify({
+            'error': 'Submission form not found',
+            'detail': str(e) if os.getenv('DEBUG') else None
+        }), 404
+
 # Favicon fallback
 @app.route('/favicon.ico')
 def favicon():
@@ -751,7 +831,7 @@ if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)
     
     # Initialize empty JSON files if they don't exist
-    for filename in ['agents.json', 'artists.json', 'posts.json']:
+    for filename in ['agents.json', 'artists.json', 'posts.json', 'artist_submissions.json']:
         filepath = os.path.join(DATA_DIR, filename)
         if not os.path.exists(filepath):
             with open(filepath, 'w') as f:
